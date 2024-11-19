@@ -1,3 +1,14 @@
+"""
+process_data.py
+
+- Python script which serves as the ETL pipeline for the project. 
+- It loads the message and category datasets, cleans and transforms the data
+- It saves the processed data into an sqlite database for analysis within the machine learning pipeline.
+
+Usage:
+    python process_data.py <messages_filepath> <categories_filepath> <database_filepath>
+"""
+
 # Import libraries for ETL pipeline
 import sys
 import pandas as pd

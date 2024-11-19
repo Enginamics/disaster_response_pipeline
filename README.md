@@ -33,6 +33,7 @@ This GitHub repository consists of the following main files and folders:
 - ./app
 
 - ./data
+    - **process_data.py**: Python script which serves as the ETL pipeline for the project. 
 
 - ./models
 
