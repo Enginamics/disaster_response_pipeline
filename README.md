@@ -9,6 +9,7 @@ For the analysis the following Python version and packages were used (see chapte
 
 **Packages:**   
 - pandas==2.2.2
+- sqlalchemy==2.0.36
 
 ## Table of Contents
 
@@ -67,6 +68,7 @@ Then activate the virtual environment
 The project uses the python packages
 
 - pandas
+- sqlalchemy
 
 which all can be installed via the provided requirements.txt into the virtual environment
 ```shell
