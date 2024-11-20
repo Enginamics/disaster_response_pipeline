@@ -1,38 +1,50 @@
+# --------------------
+# Imports
+# --------------------
+# Standard Library Imports
 import json
-import plotly
+import sys
+import os
+
+# Add the project root to Python path to be able to use local imports
+ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(ROOT_PATH)
+
+# local Imports
+from tools.tokenizer import tokenize
+from tools.score import multioutput_f1_score
+
+# Third-Party Library Imports
+import joblib
 import pandas as pd
-
-from nltk.stem import WordNetLemmatizer
-from nltk.tokenize import word_tokenize
-
-from flask import Flask
-from flask import render_template, request, jsonify
+import plotly
+from flask import Flask, jsonify, render_template, request
 from plotly.graph_objs import Bar
-from sklearn.externals import joblib
 from sqlalchemy import create_engine
 
+# --------------------
+# Constants
+# --------------------
+DATABASE_PATH = os.path.join(ROOT_PATH, "data", "DisasterResponse.db")
+MODEL_PATH = os.path.join(ROOT_PATH, "models", "classifier.pkl")
 
+# --------------------
+# App Initialization
+# --------------------
 app = Flask(__name__)
 
-def tokenize(text):
-    tokens = word_tokenize(text)
-    lemmatizer = WordNetLemmatizer()
+# --------------------
+# Load Data and Model
+# --------------------
+engine = create_engine(f"sqlite:///{DATABASE_PATH}")
+df = pd.read_sql_table("messages_categories", engine)
 
-    clean_tokens = []
-    for tok in tokens:
-        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
-        clean_tokens.append(clean_tok)
-
-    return clean_tokens
-
-# load data
-engine = create_engine('sqlite:///../data/YourDatabaseName.db')
-df = pd.read_sql_table('YourTableName', engine)
-
-# load model
-model = joblib.load("../models/your_model_name.pkl")
+model = joblib.load(MODEL_PATH)
 
 
+# --------------------
+# Routes
+# --------------------
 # index webpage displays cool visuals and receives user input text for model
 @app.route('/')
 @app.route('/index')
@@ -92,9 +104,16 @@ def go():
     )
 
 
+# --------------------
+# Main Function
+# --------------------
 def main():
-    app.run(host='0.0.0.0', port=3001, debug=True)
+    """
+    Main function to run the Flask app.
+    """
+    app.run(host="0.0.0.0", port=3001, debug=True)
 
 
-if __name__ == '__main__':
+# Entry point for the script
+if __name__ == "__main__":
     main()

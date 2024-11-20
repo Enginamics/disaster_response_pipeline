@@ -8,8 +8,13 @@ For the analysis the following Python version and packages were used (see chapte
 - Python 3.12.5
 
 **Packages:**   
-- pandas==2.2.2
-- sqlalchemy==2.0.36
+- flask==3.1.0   
+- nltk==3.9.1   
+- numpy==2.1.3   
+- pandas==2.2.3   
+- plotly==5.24.1   
+- scikit-learn==1.5.2   
+- sqlalchemy==2.0.36   
 
 ## Table of Contents
 
@@ -32,11 +37,17 @@ The main objective of this project is to build a working ETL (Extract, Transform
 This GitHub repository consists of the following main files and folders:
 
 - ./app
+    - ./templates: folder which includes the html templates for the web application   
+    - **run.py**: Python script which starts and runs the web application
 
 - ./data
-    - **process_data.py**: Python script which serves as the ETL pipeline for the project. 
+    - **process_data.py**: Python script which realizes the ETL pipeline for the project. 
 
 - ./models
+    - **train_classifier.py**: Python script which realizes the ML pipeline for the project
+
+- ./tools
+    - **tokenizer.py**: Python script used to tokenize text
 
 - requirements.txt   
     - This file specifies the dependencies used by the project (see chapter [Installing](#installing) for more details) 

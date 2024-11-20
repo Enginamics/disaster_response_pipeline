@@ -1,24 +1,180 @@
+# --------------------
+# Imports:
+# --------------------
+# Standard Library Imports:
 import sys
+import os
+import re
+import pickle
 
+# Third party imports:
+import pandas as pd
+import numpy as np
+
+# Import data from SQL
+from sqlalchemy import create_engine
+
+# Add the project root to Python path to be able to use local imports
+ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(ROOT_PATH)
+
+# local Imports
+from tools.tokenizer import tokenize
+from tools.score import multioutput_f1_score
+
+# Scikit-learn for Machine Learning Pipeline and Model Evaluation
+from sklearn.pipeline import Pipeline, FeatureUnion
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import classification_report, accuracy_score, f1_score, make_scorer
+from sklearn.base import BaseEstimator, TransformerMixin
+
+# --------------------
+# Functions
+# --------------------
 
 def load_data(database_filepath):
-    pass
+    """
+    Load data from sqlite database and prepare features and targets.
 
+    Args:
+        database_filepath (str): Path to the sqlite database.
 
-def tokenize(text):
-    pass
+    Returns:
+        X (pd.Series): The feature column (in this case: messages).
+        Y (pd.DataFrame): Target variables (in this case: categories).
+        category_names (list): Names of the target variable categories.
+    """
+    try:
+        # Connect to the sqlite database
+        engine = create_engine(f'sqlite:///{database_filepath}')
+        
+        # Load table into a DataFrame
+        df = pd.read_sql_table('messages_categories', engine)
+        
+        # Extract features and targets
+        X = df['message']
+        Y = df.iloc[:, 4:]  # Adjust this index range based on your database structure
+      
+        # Get the category names
+        category_names = Y.columns.tolist()
+        
+        return X, Y, category_names
+
+    except Exception as e:
+        print(f"Error loading data: {e}")
+        sys.exit(1)
 
 
 def build_model():
-    pass
+    """
+    Build a machine learning pipeline with a text processing pipeline 
+    and a multi-output classifier, and integrate GridSearchCV for optimization 
+    using a custom scoring function for multi-output F1-score.
+
+    Returns:
+        GridSearchCV: A grid search model with pipeline and hyperparameter tuning.
+    """
+    # Define the machine learning pipeline
+    pipeline = Pipeline([
+        ('features', FeatureUnion([
+            ('text_pipeline', Pipeline([
+                ('vect', CountVectorizer(tokenizer=tokenize, token_pattern=None)),
+                ('tfidf', TfidfTransformer())
+            ])),
+            # Add more features if needed (e.g., custom transformers)
+        ])),
+        ('clf', MultiOutputClassifier(RandomForestClassifier(random_state=42, n_jobs=-1)))  # Use all CPU cores
+    ])
+
+    # Define hyperparameters for GridSearchCV
+    # parameters = {
+    #     'clf__estimator__n_estimators': [50, 100],  # Number of trees in the forest
+    #     'clf__estimator__min_samples_split': [2, 4],  # Minimum samples to split a node
+    #     'features__text_pipeline__vect__max_df': [0.75, 1.0],  # Max document frequency
+    #     'features__text_pipeline__tfidf__use_idf': [True, False],  # Use inverse document frequency
+    # }
+    parameters = {
+        'clf__estimator__n_estimators': [50, 100],  # Number of trees in the forest ( just for testing)
+    }
+
+    # Custom scorer for GridSearchCV
+    scorer = make_scorer(multioutput_f1_score)
+
+    # Grid search with cross-validation
+    model = GridSearchCV(
+        pipeline,
+        param_grid=parameters,
+        scoring=scorer,  # Use custom scorer
+        verbose=3,  # Display progress logs
+        n_jobs=-1,  # Use all CPU cores
+        cv=3  # 3-fold cross-validation
+    )
+
+    return model
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
-    pass
+    """
+    Evaluate the performance of a trained model on the test set.
+
+    Args:
+        model: Trained machine learning model.
+        X_test (pd.DataFrame): Test features.
+        Y_test (pd.DataFrame): True labels for the test set.
+        category_names (list): List of category names.
+
+    Returns:
+        None
+    """
+    # Predict the labels for the test set
+    Y_pred = model.predict(X_test)
+
+    # Initialize lists to collect average metrics
+    avg_precision, avg_recall, avg_f1 = [], [], []
+
+    # Iterate over each category and compute metrics
+    for i, category in enumerate(category_names):
+        print(f"\nCategory: {category}")
+        print(classification_report(Y_test.iloc[:, i], Y_pred[:, i]))
+        print(f"Accuracy: {accuracy_score(Y_test.iloc[:, i], Y_pred[:, i]):.2f}")
+
+        # Collect metrics for averages
+        report = classification_report(
+            Y_test.iloc[:, i], Y_pred[:, i], output_dict=True
+        )
+        avg_precision.append(report["weighted avg"]["precision"])
+        avg_recall.append(report["weighted avg"]["recall"])
+        avg_f1.append(report["weighted avg"]["f1-score"])
+
+    # Display average metrics across all categories
+    print("\n--- Overall Metrics ---")
+    print(f"Average Precision: {np.mean(avg_precision):.2f}")
+    print(f"Average Recall: {np.mean(avg_recall):.2f}")
+    print(f"Average F1 Score: {np.mean(avg_f1):.2f}")
 
 
 def save_model(model, model_filepath):
-    pass
+    """
+    Save the trained model to a pickle file.
+
+    Args:
+        model: Trained machine learning model.
+        model_filepath (str): Filepath to save the model as a pickle file.
+
+    Returns:
+        None
+    """
+    try:
+        # Save the model to the specified filepath
+        with open(model_filepath, 'wb') as file:
+            pickle.dump(model, file)
+        print(f"Model successfully saved to {model_filepath}")
+
+    except Exception as e:
+        print(f"Error saving model: {e}")
 
 
 def main():
