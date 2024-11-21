@@ -15,6 +15,8 @@ For the analysis the following Python version and packages were used (see chapte
 - plotly==5.24.1   
 - scikit-learn==1.5.2   
 - sqlalchemy==2.0.36   
+- textblob==0.18.0.post0   
+- xgboost==2.1.2   
 
 ## Table of Contents
 
@@ -54,55 +56,58 @@ This GitHub repository consists of the following main files and folders:
 
 ## Installing
 
-Make sure [python 3.12.5](https://www.python.org/downloads/release/python-3125/) (or newer) is installed on your machine
+Ensure you have [Python 3.12.5](https://www.python.org/downloads/release/python-3125/) or a newer version installed.
 
-Clone this repository to your machine:
-```shell
-git clone https://github.com/Enginamics/disaster_response_pipeline.git
-```
-Then create the virtual python environment in the cloned repository
-```shell
-cd /path/to/this/repository
-```
-```shell
-python -m venv .venv
-```
-Then activate the virtual environment
-- On Windows:
-    ```shell
-    .venv\Scripts\activate
+1. Clone this repository:
+    ```bash
+    git clone https://github.com/Enginamics/disaster_response_pipeline.git
     ```
-- On macOS/Linux:
-    ```shell
-    source .venv/bin/activate
+2. Navigate to the project directory:
+    ```bash
+    cd /path/to/this/repository
     ```
-The project uses the python packages
+3. Create a virtual environment:
+    ```bash
+    python -m venv .venv
+    ```
+4. Activate the virtual environment:
+    - On **Windows**:
+        ```bash
+        .venv\Scripts\activate
+        ```
+    - On **macOS/Linux**:
+        ```bash
+        source .venv/bin/activate
+        ```
+5. Install the required packages:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-- pandas
-- sqlalchemy
+## Instructions
 
-which all can be installed via the provided requirements.txt into the virtual environment
-```shell
-pip install -r requirements.txt
-```
+1. **Set Up the Environment**:
+   Follow the steps in the [Installing](#installing) section to prepare the environment.
 
-## Instructions:
+2. **Run ETL and ML Pipelines**:
+   Execute the following commands from the project’s root directory:
+   - To clean data and store it in a database:
+     ```bash
+     python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db
+     ```
+   - To train the classifier and save the model:
+     ```bash
+     python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl
+     ```
 
-1. Install and activate the virtual python environment
+3. **Run the Web Application**:
+   Navigate to the `app/` directory and start the web application:
+   ```bash
+   cd ./app
+   python run.py
+   ```
 
-    - see chapter [Installing](#installing) for more details
-
-2. Run the following commands in the project's root directory to set up your database and model.
-
-    - To run ETL pipeline that cleans data and stores in database
-        `python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db`
-    - To run ML pipeline that trains classifier and saves
-        `python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl`
-
-3. Run the following command in the app's directory to run your web app.
-    `python run.py`
-
-4. Go to http://0.0.0.0:3001/
+4. **Go to** http://127.0.0.1:3001
 
 ## Licensing, Authors, and Acknowledgements
 

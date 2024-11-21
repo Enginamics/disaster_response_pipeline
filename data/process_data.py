@@ -20,11 +20,11 @@ def load_data(messages_filepath, categories_filepath):
     Load and merge messages and categories datasets.
 
     Args:
-    messages_filepath (str): File path of the messages CSV file.
-    categories_filepath (str): File path of the categories CSV file.
+        messages_filepath (str): File path of the messages CSV file.
+        categories_filepath (str): File path of the categories CSV file.
 
     Returns:
-    pd.DataFrame: Merged DataFrame which includes messages and categories.
+        pd.DataFrame: Merged DataFrame which includes messages and categories.
     """
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
@@ -37,10 +37,10 @@ def clean_data(df):
     Cleaning the merged DataFrame by splitting categories and converting values.
 
     Args:
-    df (pd.DataFrame): Merged DataFrame with messages and categories.
+        df (pd.DataFrame): Merged DataFrame with messages and categories.
 
     Returns:
-    pd.DataFrame: Cleaned DataFrame with categories separated into multiple columns.
+        pd.DataFrame: Cleaned DataFrame with categories separated into multiple columns.
     """
     # Create DataFrame of the 36 individual category columns
     categories = df['categories'].str.split(';', expand=True)
@@ -71,8 +71,8 @@ def save_data(df, database_filename):
     Save the cleaned up dataset into a sqlite database.
 
     Args:
-    df (pd.DataFrame): Cleaned DataFrame.
-    database_filename (str): File path of the sqlite database.
+        df (pd.DataFrame): Cleaned DataFrame.
+        database_filename (str): File path of the sqlite database.
     """
     engine = create_engine(f'sqlite:///{database_filename}')
     df.to_sql('messages_categories', engine, index=False, if_exists='replace')

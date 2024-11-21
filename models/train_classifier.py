@@ -21,15 +21,15 @@ sys.path.append(ROOT_PATH)
 # local Imports
 from tools.tokenizer import tokenize
 from tools.score import multioutput_f1_score
+from tools.transformer import TextFeatureExtractor
 
 # Scikit-learn for Machine Learning Pipeline and Model Evaluation
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.multioutput import MultiOutputClassifier
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from xgboost import XGBClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import classification_report, accuracy_score, f1_score, make_scorer
-from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.metrics import classification_report, accuracy_score, make_scorer
 
 # --------------------
 # Functions
@@ -67,16 +67,16 @@ def load_data(database_filepath):
         print(f"Error loading data: {e}")
         sys.exit(1)
 
-
 def build_model():
     """
     Build a machine learning pipeline with a text processing pipeline 
-    and a multi-output classifier, and integrate GridSearchCV for optimization 
-    using a custom scoring function for multi-output F1-score.
+    and a multi-output classifier using XGBoost, and integrate GridSearchCV 
+    for optimization using a custom scoring function for multi-output F1-score.
 
     Returns:
         GridSearchCV: A grid search model with pipeline and hyperparameter tuning.
     """
+
     # Define the machine learning pipeline
     pipeline = Pipeline([
         ('features', FeatureUnion([
@@ -84,19 +84,21 @@ def build_model():
                 ('vect', CountVectorizer(tokenizer=tokenize, token_pattern=None)),
                 ('tfidf', TfidfTransformer())
             ])),
+            ('custom_features', TextFeatureExtractor()),  # Add custom features here
         ])),
-        ('clf', MultiOutputClassifier(RandomForestClassifier(random_state=42, class_weight='balanced', n_jobs=-1)))  # Use all CPU cores
+        ('clf', MultiOutputClassifier(XGBClassifier(
+            random_state=42, 
+            scale_pos_weight=1,
+            eval_metric='logloss'
+        )))
     ])
 
     # Define hyperparameters for GridSearchCV
-    # parameters = {
-    #     'clf__estimator__n_estimators': [50, 100],  # Number of trees in the forest
-    #     'clf__estimator__min_samples_split': [2, 4],  # Minimum samples to split a node
-    #     'features__text_pipeline__vect__max_df': [0.75, 1.0],  # Max document frequency
-    #     'features__text_pipeline__tfidf__use_idf': [True, False],  # Use inverse document frequency
-    # }
     parameters = {
-        'clf__estimator__n_estimators': [50, 100],  # Number of trees in the forest ( just for testing)
+        'clf__estimator__n_estimators': [50, 100],
+        'clf__estimator__max_depth': [3, 5],
+        'clf__estimator__learning_rate': [0.1, 0.3],
+        'clf__estimator__scale_pos_weight': [1, 5, 10],
     }
 
     # Custom scorer for GridSearchCV
@@ -193,7 +195,7 @@ def main():
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
-        
+     
         print('Building model...')
         model = build_model()
         
