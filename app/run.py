@@ -50,14 +50,23 @@ model = joblib.load(MODEL_PATH)
 @app.route('/index')
 def index():
     
-    # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
+    # Extract data needed for visuals
+    # Original data for genre distribution
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
-    
-    # create visuals
-    # TODO: Below is an example - modify to create your own visuals
+
+    # New data for additional visualizations
+    # Data for category distribution
+    category_counts = df.iloc[:, 4:].sum().sort_values(ascending=False)
+    category_names = list(category_counts.index)
+
+    # Data for genre proportions
+    genre_proportions = df['genre'].value_counts(normalize=True) * 100
+    genre_labels = list(genre_proportions.index)
+
+    # Create visuals
     graphs = [
+        # Existing Genre Distribution Visualization
         {
             'data': [
                 Bar(
@@ -65,24 +74,48 @@ def index():
                     y=genre_counts
                 )
             ],
-
             'layout': {
                 'title': 'Distribution of Message Genres',
-                'yaxis': {
-                    'title': "Count"
-                },
-                'xaxis': {
-                    'title': "Genre"
+                'yaxis': {'title': "Count"},
+                'xaxis': {'title': "Genre"}
+            }
+        },
+        # New Visualization 1: Distribution of Message Categories
+        {
+            'data': [
+                Bar(
+                    x=category_names,
+                    y=category_counts
+                )
+            ],
+            'layout': {
+                'title': 'Distribution of Message Categories',
+                'yaxis': {'title': "Count"},
+                'xaxis': {'title': "Categories"}
+            }
+        },
+        # New Visualization 2: Proportion of Messages by Genre
+        {
+            'data': [
+                {
+                    "type": "pie",
+                    "labels": genre_labels,
+                    "values": genre_proportions.tolist(),
+                    "hoverinfo": "label+percent",
+                    "textinfo": "percent"
                 }
+            ],
+            'layout': {
+                'title': 'Proportion of Messages by Genre'
             }
         }
     ]
-    
-    # encode plotly graphs in JSON
+
+    # JSON encoding for rendering in HTML
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
-    
-    # render web page with plotly graphs
+
+    # Render the `master.html` template with the updated graphs
     return render_template('master.html', ids=ids, graphJSON=graphJSON)
 
 

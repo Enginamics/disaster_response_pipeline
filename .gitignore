@@ -1,6 +1,4 @@
 # own ignores
-*.pkl
-*.db
 .vscode
 
 # Byte-compiled / optimized / DLL files

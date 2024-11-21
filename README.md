@@ -38,18 +38,24 @@ The main objective of this project is to build a working ETL (Extract, Transform
 
 This GitHub repository consists of the following main files and folders:
 
-- ./app
-    - ./templates: folder which includes the html templates for the web application   
-    - **run.py**: Python script which starts and runs the web application
+- ./app   
+    - ./templates: folder which includes the html templates for the web application      
+    - **run.py**: Python script which starts and runs the web application   
 
-- ./data
-    - **process_data.py**: Python script which realizes the ETL pipeline for the project. 
+- ./data   
+    - *.csv: raw data provided by data science course   
+    - DisasterResponse.db: sqlite database ("cleaned data") used for training   
+    - **process_data.py**: Python script which realizes the ETL pipeline for the project.   
 
-- ./models
-    - **train_classifier.py**: Python script which realizes the ML pipeline for the project
+- ./models   
+    - classifier.pkl: pkl file of trained model   
+    - **train_classifier.py**: Python script which realizes the ML pipeline for the project   
 
-- ./tools
-    - **tokenizer.py**: Python script used to tokenize text
+- ./tools   
+    This folder includes common tools / utilities, which can be used by all other scripts of this project.
+    - **score.py**: Python script with custom scorer   
+    - **tokenizer.py**: Python script used to tokenize text   
+    - **transformer.py**: Python script used to transform text   
 
 - requirements.txt   
     - This file specifies the dependencies used by the project (see chapter [Installing](#installing) for more details) 
@@ -114,4 +120,3 @@ Ensure you have [Python 3.12.5](https://www.python.org/downloads/release/python-
 A special thanks to the [Udacity - Data Scientist](https://www.udacity.com/course/data-scientist-nanodegree--nd025) course, which made this analysis possible.
 
 ## Troubleshooting
-
