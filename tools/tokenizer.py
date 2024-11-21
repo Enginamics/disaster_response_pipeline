@@ -1,5 +1,7 @@
 # tokenizer.py
 
+import re
+
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
@@ -23,6 +25,17 @@ def tokenize(text):
     Returns:
         list: A list of cleaned tokens.
     """
+
+    # Replace Urls (if there are any)
+    loc_url_regex = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+
+    loc_detected_urls = re.findall(loc_url_regex, text)
+    for url in loc_detected_urls:
+        text = text.replace(url, "urlplaceholder")
+
+    # Preprocess text to exclude specific punctuation
+    text = re.sub(r'[,\-\(\)]', ' ', text)
+
     # Initialize lemmatizer
     lemmatizer = WordNetLemmatizer()
 

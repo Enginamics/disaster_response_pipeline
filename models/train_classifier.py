@@ -84,9 +84,8 @@ def build_model():
                 ('vect', CountVectorizer(tokenizer=tokenize, token_pattern=None)),
                 ('tfidf', TfidfTransformer())
             ])),
-            # Add more features if needed (e.g., custom transformers)
         ])),
-        ('clf', MultiOutputClassifier(RandomForestClassifier(random_state=42, n_jobs=-1)))  # Use all CPU cores
+        ('clf', MultiOutputClassifier(RandomForestClassifier(random_state=42, class_weight='balanced', n_jobs=-1)))  # Use all CPU cores
     ])
 
     # Define hyperparameters for GridSearchCV
@@ -113,15 +112,16 @@ def build_model():
         cv=3  # 3-fold cross-validation
     )
 
+    # Return GridSearch object
     return model
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
     """
-    Evaluate the performance of a trained model on the test set.
+    Evaluate the performance of a trained model or a GridSearchCV model on the test set.
 
     Args:
-        model: Trained machine learning model.
+        model: Trained model or GridSearchCV object.
         X_test (pd.DataFrame): Test features.
         Y_test (pd.DataFrame): True labels for the test set.
         category_names (list): List of category names.
@@ -129,8 +129,18 @@ def evaluate_model(model, X_test, Y_test, category_names):
     Returns:
         None
     """
+    # If the model is a GridSearchCV object, use the best estimator
+    if hasattr(model, 'best_estimator_'):
+        print("Evaluating the best model from GridSearchCV...")
+        best_model = model.best_estimator_
+        best_params = model.best_params_
+        print("Best Parameters:", best_params)
+    else:
+        print("Evaluating the provided model...")
+        best_model = model  # Use the model directly
+
     # Predict the labels for the test set
-    Y_pred = model.predict(X_test)
+    Y_pred = best_model.predict(X_test)
 
     # Initialize lists to collect average metrics
     avg_precision, avg_recall, avg_f1 = [], [], []
