@@ -1,5 +1,7 @@
 # Disaster Response Pipeline Project
 
+![Logo](./doc/logo.png)
+
 This is a repository for the [Udacity - Data Scientist](https://www.udacity.com/course/data-scientist-nanodegree--nd025) Course 4 - Data Engineering project.
 
 For the analysis the following Python version and packages were used (see chapter [Installing](#installing) for more details) 
@@ -33,6 +35,8 @@ For the analysis the following Python version and packages were used (see chapte
 The main objective of this project is to build a working ETL (Extract, Transform, and Load) and Machine Learning Pipeline on real world data.
 
 ## Results
+
+To see the result, follow the steps in chapter [Installing](#installing) and [Instructions](#instructions).
 
 ## Files and Folders
 
@@ -92,22 +96,38 @@ Ensure you have [Python 3.12.5](https://www.python.org/downloads/release/python-
 
 ## Instructions
 
-1. **Set Up the Environment**:
+### 1. If you just want to see the result with the pre-trained model:
+
+1. **Set Up the Environment**:   
    Follow the steps in the [Installing](#installing) section to prepare the environment.
 
-2. **Run ETL and ML Pipelines**:
-   Execute the following commands from the project’s root directory:
-   - To clean data and store it in a database:
+2. **Run the Web Application**:   
+   Navigate to the `app/` directory and start the web application:   
+   ```bash
+   cd ./app
+   python run.py
+   ```
+
+3. **Go to** http://127.0.0.1:3001
+
+### 2. If you want to retrain / improve the model:
+
+1. **Set Up the Environment**:   
+   Follow the steps in the [Installing](#installing) section to prepare the environment.
+
+2. **Run ETL and ML Pipelines**:   
+   Execute the following commands from the project’s root directory:   
+   - To clean data and store it in a database:   
      ```bash
      python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db
      ```
-   - To train the classifier and save the model:
+   - To train the classifier and save the model:   
      ```bash
      python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl
      ```
 
-3. **Run the Web Application**:
-   Navigate to the `app/` directory and start the web application:
+3. **Run the Web Application**:   
+   Navigate to the `app/` directory and start the web application:   
    ```bash
    cd ./app
    python run.py

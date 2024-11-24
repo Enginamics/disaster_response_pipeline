@@ -6,19 +6,15 @@ import json
 import sys
 import os
 
-# Add the project root to Python path to be able to use local imports
+# Adding project root to Python path to be able to use local imports
 ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(ROOT_PATH)
-
-# local Imports
-from tools.tokenizer import tokenize
-from tools.score import multioutput_f1_score
 
 # Third-Party Library Imports
 import joblib
 import pandas as pd
 import plotly
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, render_template, request
 from plotly.graph_objs import Bar
 from sqlalchemy import create_engine
 
@@ -49,13 +45,14 @@ model = joblib.load(MODEL_PATH)
 @app.route('/')
 @app.route('/index')
 def index():
-    
+    """
+    Main page route: Displays visuals and input text for model prediction.
+    """
     # Extract data needed for visuals
     # Original data for genre distribution
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
 
-    # New data for additional visualizations
     # Data for category distribution
     category_counts = df.iloc[:, 4:].sum().sort_values(ascending=False)
     category_names = list(category_counts.index)
@@ -64,9 +61,33 @@ def index():
     genre_proportions = df['genre'].value_counts(normalize=True) * 100
     genre_labels = list(genre_proportions.index)
 
+    # Data for example messages
+    example_messages = df[['message', 'genre']].sample(5).values.tolist()
+
     # Create visuals
     graphs = [
-        # Existing Genre Distribution Visualization
+        # Example Messages Visualization
+        {
+            'data': [
+                {
+                    "type": "table",
+                    "header": {
+                        "values": ["Message", "Genre"],
+                        "align": "left"
+                    },
+                    "cells": {
+                        "values": list(zip(*example_messages)),
+                        "align": "left",
+                        "format": ""
+                    }
+                }
+            ],
+            'layout': {
+                'title': 'Five exemplary messages from the Dataset',
+                'margin': {"t": 30, "l": 0, "r": 0, "b": 0}
+            }
+        },
+        # Distribution of Message Genres
         {
             'data': [
                 Bar(
@@ -80,7 +101,7 @@ def index():
                 'xaxis': {'title': "Genre"}
             }
         },
-        # New Visualization 1: Distribution of Message Categories
+        # Distribution of Message Categories
         {
             'data': [
                 Bar(
@@ -94,7 +115,7 @@ def index():
                 'xaxis': {'title': "Categories"}
             }
         },
-        # New Visualization 2: Proportion of Messages by Genre
+        # Proportion of Messages by Genre
         {
             'data': [
                 {
@@ -142,7 +163,7 @@ def go():
 # --------------------
 def main():
     """
-    Main function to run the Flask app.
+    Main function - run Flask app.
     """
     app.run(host="0.0.0.0", port=3001, debug=True)
 
