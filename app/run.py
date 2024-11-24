@@ -83,7 +83,7 @@ def index():
                 }
             ],
             'layout': {
-                'title': 'Five exemplary messages from the Dataset',
+                'title': 'Five randomly selected Messages from the Dataset',
                 'margin': {"t": 30, "l": 0, "r": 0, "b": 0}
             }
         },

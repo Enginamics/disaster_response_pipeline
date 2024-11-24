@@ -51,6 +51,9 @@ This GitHub repository consists of the following main files and folders:
     - DisasterResponse.db: sqlite database ("cleaned data") used for training   
     - **process_data.py**: Python script which realizes the ETL pipeline for the project.   
 
+- ./doc
+    - This folder contains additional documentation (e.g. logo.png which is the logo for the project)
+
 - ./models   
     - classifier.pkl: pkl file of trained model   
     - **train_classifier.py**: Python script which realizes the ML pipeline for the project   
