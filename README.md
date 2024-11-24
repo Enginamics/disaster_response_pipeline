@@ -28,7 +28,7 @@ For the analysis the following Python version and packages were used (see chapte
 4. [Installing](#installing)
 5. [Instructions](#instructions)
 6. [Licensing, Authors, and Acknowledgements](#licensing-authors-and-acknowledgements)
-7. [Troubleshooting](#troubleshooting)
+7. [Additional thoughts for subsequent development](#additional-thoughts-for-subsequent-development)
 
 ## Project Motivation
 
@@ -69,33 +69,33 @@ This GitHub repository consists of the following main files and folders:
 
 ## Installing
 
-Ensure you have [Python 3.12.5](https://www.python.org/downloads/release/python-3125/) or a newer version installed.
+Ensure you have [Python 3.12.5](https://www.python.org/downloads/release/python-3125/) installed.
 
 1. Clone this repository:
     ```bash
     git clone https://github.com/Enginamics/disaster_response_pipeline.git
-    ```
+    ```   
 2. Navigate to the project directory:
     ```bash
     cd /path/to/this/repository
-    ```
+    ```   
 3. Create a virtual environment:
     ```bash
     python -m venv .venv
-    ```
+    ```   
 4. Activate the virtual environment:
     - On **Windows**:
         ```bash
         .venv\Scripts\activate
-        ```
+        ```   
     - On **macOS/Linux**:
         ```bash
         source .venv/bin/activate
-        ```
+        ```   
 5. Install the required packages:
     ```bash
     pip install -r requirements.txt
-    ```
+    ```   
 
 ## Instructions
 
@@ -140,6 +140,13 @@ Ensure you have [Python 3.12.5](https://www.python.org/downloads/release/python-
 
 ## Licensing, Authors, and Acknowledgements
 
-A special thanks to the [Udacity - Data Scientist](https://www.udacity.com/course/data-scientist-nanodegree--nd025) course, which made this analysis possible.
+A special thanks to the [Udacity - Data Scientist](https://www.udacity.com/course/data-scientist-nanodegree--nd025) course, which made this project possible.
 
-## Troubleshooting
+## Additional thoughts for subsequent development
+
+This project successfully establishes a complete ETL and machine learning pipeline, demonstrating its ability to process, analyze, and classify disaster response messages. 
+However, it also shows the challenges of building a machine learning model for disaster response using an imbalanced dataset. 
+While the model performs well for majority classes, it struggles with underrepresented categories. 
+Future improvements, such as using advanced resampling techniques or separate models of improved feature engineering for minority classes, could further enhance its effectiveness in real world applications.
+
+

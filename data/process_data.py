@@ -7,6 +7,9 @@ process_data.py
 
 Usage:
     python process_data.py <messages_filepath> <categories_filepath> <database_filepath>
+
+Example:
+    python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db
 """
 
 # Import libraries for ETL pipeline

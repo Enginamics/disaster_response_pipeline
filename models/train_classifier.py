@@ -1,3 +1,19 @@
+"""
+train_classifier.py
+
+- Python script for training and saving a machine learning model to classify disaster response messages. 
+- It saves the trained model as a pickle file for the web application.
+
+Usage:
+    python train_classifier.py <database_filepath> <model_filepath>
+
+    - <database_filepath>: Path to the sqlite database containing the preprocessed data.
+    - <model_filepath>: Path to save the model as a pickle file.
+
+Example:
+    python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl
+"""
+
 # --------------------
 # Imports:
 # --------------------
